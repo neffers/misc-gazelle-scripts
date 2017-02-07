@@ -43,11 +43,11 @@ for torrent in groupJSON['response']['torrents']:
         validInput = False
         while not validInput:
             choice = input()
-            if choice.lower() == "y" or choice.lower() == "yes" or choice.lower() == "n" or choice.lower() == "no"
+            if choice.lower() == "y" or choice.lower() == "yes" or choice.lower() == "n" or choice.lower() == "no":
                 validInput = True
-            else
+            else:
                 print("Invalid input, try again")
-        if choice.lower() == "n" or choice.lower() == "no"
+        if choice.lower() == "n" or choice.lower() == "no":
             continue
 
     ##adding torrent can throw errors
