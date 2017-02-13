@@ -1,3 +1,3 @@
 # gazelle-download-group
-adds an entire torrent group (typically an album, meant to ratio-whore freeleech picks) to transmission-remote, to a specific subdirectory
-not included is secret.py which contains login information (username and password, stored as such), the web address of the tracker you are using, stored as baseurl, and the address of the torrent tracker, as tracker
+search a gazelle instance for freeleech torrents and add them to a local transmission instance, to a specific directory.
+included is an example secret.py containing example entries of what information is needed for the script to run, including the gazelle web address, a valid login for it, the address of the tracker (often different than the web address) and the directory you wish the torrents to be stored in.

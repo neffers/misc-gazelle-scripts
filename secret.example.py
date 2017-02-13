@@ -1,5 +1,5 @@
 username = 'Username'
 password = 'Password'
-baseurl = 'web URL of gazelle'
-tracker = 'URL of tracker'
+baseurl = 'https://gazelle.instance.address/'
+tracker = 'https://tracker.address/'
 directory = '/path/where/you/want/torrents/saved/'
