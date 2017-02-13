@@ -8,19 +8,30 @@ import html
 transmission = transmissionrpc.Client()
 trackerTorrents = []
 
-#compile array of torrents that use the specified tracker (if specified)
+transmissionTorrents = transmission.get_torrents(arguments=['id','trackers','name'])
+
+#compile array of torrents that use either the gazelle address or the specified tracker address as their tracker
+print("\nLooking for previously added torrents...")
+for torrent in transmissionTorrents:
+    for tracker in torrent.trackers:
+        if secret.baseurl in tracker['announce']:
+            trackerTorrents.append(torrent.name)
+
 if secret.tracker:
-    for torrent in transmission.get_torrents(arguments=['id','trackers','name']):
+    for torrent in transmissionTorrents:
         for tracker in torrent.trackers:
             if secret.tracker in tracker['announce']:
                 trackerTorrents.append(torrent.name)
-else:
-    print('Found no tracker specified in secret.py, I cannot reliably tell what torrents have already been added (without significant cpu cost) without it!')
+
+if trackerTorrents == []:
     trackerTorrents = None
+    print("Couldn't find any torrents that use "+secret.baseurl+" or "+secret.tracker+" as trackers!")
+else:
+    print("Found "+str(len(trackerTorrents))+" torrents!")
 
 #set up requests session, log in to gazelle
 requestsSession = requests.Session()
-print("Logging in...")
+print("\nLogging in to gazelle...")
 requestsSession.post(secret.baseurl+'login.php', data = {'username':secret.username, 'password':secret.password})
 
 #avoid spam
