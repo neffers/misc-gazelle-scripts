@@ -3,9 +3,20 @@ import transmissionrpc
 import secret
 import base64
 import time
-
+import html
 
 transmission = transmissionrpc.Client()
+trackerTorrents = []
+
+#compile array of torrents that use the specified tracker (if specified)
+if secret.tracker:
+    for torrent in transmission.get_torrents():
+        for tracker in torrent.trackers:
+            if secret.tracker in tracker['announce']:
+                trackerTorrents.append(torrent.name)
+else:
+    print('Found no tracker specified in secret.py, I cannot reliably tell what torrents have already been added (without significant cpu cost) without it!')
+    trackerTorrents = None
 
 #set up requests session, log in to gazelle
 requestsSession = requests.Session()
@@ -30,15 +41,15 @@ while not done:
 
     #use the search api to return the list of freetorrents
     flsearch = requestsSession.get(secret.baseurl+'ajax.php', params = {'action':'browse','freetorrent':1,'page':page}).json()
-    print("Search request returned "+flsearch['status'])
+    print("Search request returned "+flsearch['status']+"on page "+str(page)+' of '+str(flsearch['response']['pages']))
 
     #go through each group included in results
     for torrentGroup in flsearch['response']['results']:
 
         #get torrent group (album) id from the torrentgroup
         torrentGroupID = torrentGroup['groupId']
-        groupInfoString = torrentGroup['groupName']+" by "+torrentGroup['artist']
-        print("Found group ID "+str(torrentGroupID)+", "+groupInfoString)
+        groupInfoString = html.unescape(torrentGroup['groupName']+" by "+torrentGroup['artist'])
+        print("\nFound group ID "+str(torrentGroupID)+", "+groupInfoString)
 
         #set up json object of torrent group (album) data
         groupJSON = requestsSession.get(secret.baseurl+'ajax.php', params = {'action':'torrentgroup','id':torrentGroupID}).json()
@@ -54,10 +65,16 @@ while not done:
 
             print("Found torrent "+torrentInfoString)
             
+            if trackerTorrents:
+                if html.unescape(torrent['filePath']) in trackerTorrents:
+                    print('It looks like you already have this torrent downloaded! Continuing with next torrent...')
+                    continue
+
+
             #check if a torrent is marked as freeleech (as this is the purpose of the script)
             freetorrent = torrent['freeTorrent']
             if not freetorrent:
-                print("WARNING! Torrent id "+str(torrent['id'])+" NOT marked as freeleech! (It could be marked neutral-leech) Do you wish to continue downloading?")
+                print("WARNING! Torrent id "+str(torrent['id'])+" NOT marked as freeleech! (It could be marked neutral-leech; size:"+str(torrent['size']/1024)+"MB) Do you wish to continue downloading?")
                 validInput = False
                 while not validInput:
                     choice = input()
