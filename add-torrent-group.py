@@ -71,9 +71,8 @@ while not done:
                     print('It looks like you already have this torrent downloaded! Continuing with next torrent...')
                     continue
 
-            #check if a torrent is marked as freeleech (as this is the purpose of the script)
-            freetorrent = torrent['freeTorrent']
-            if not freetorrent:
+            #check if a torrent is marked as freeleech (as this is the purpose of the script) if not, print a warning and ask the user if they wish to continue
+            if not torrent['freeTorrent']:
                 print("WARNING! Torrent id "+str(torrent['id'])+" NOT marked as freeleech! (It could be marked neutral-leech; size "+str(round(torrent['size']/(1038576),2))+" MB) Do you wish to continue downloading?")
                 validInput = False
                 while not validInput:
