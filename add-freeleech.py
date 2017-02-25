@@ -53,7 +53,12 @@ while not done:
 
     #use the search api to return the list of freetorrents
     flsearch = requestsSession.get(secret.baseurl+'ajax.php', params = {'action':'browse','freetorrent':1,'page':page}).json()
-    print("\nSearch request returned "+flsearch['status']+"on page "+str(page)+' of '+str(flsearch['response']['pages']))
+    if flsearch['response']['results']:
+        print("\nSearch request returned "+flsearch['status']+" on page "+str(page)+' of '+str(flsearch['response']['pages']))
+    else:
+        print("\nSearch returned no results! Likely no freeleech torrents")
+        done = True
+        break
 
     #go through each group included in results
     for torrentGroup in flsearch['response']['results']:
